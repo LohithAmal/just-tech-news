@@ -1,54 +1,55 @@
 const {Model,DataTypes} = require('sequelize');
-const { UPSERT } = require('sequelize/types/lib/query-types');
+
 
 const sequelize = require('../config/connection');
 
-class User extends Models {}
+class User extends Model {}
 
 User.init(
   {
-    
-  //  define an id column
-  id:{
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true,
-    autoIncrement :true
-  },
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  email:{
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-    isEmail : true
+    // define an id column
+    id: {
+      // use the special Sequelize DataTypes object provide what type of data it is
+      type: DataTypes.INTEGER,
+      // this is the equivalent of SQL's `NOT NULL` option
+      allowNull: false,
+      // instruct that this is the Primary Key
+      primaryKey: true,
+      // turn on auto increment
+      autoIncrement: true
+    },
+    // define a username column
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    // define an email column
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      // there cannot be any duplicate email values in this table
+      unique: true,
+      // if allowNull is set to false, we can run our data through validators before creating the table data
+      validate: {
+        isEmail: true
+      }
+    },
+    // define a password column
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        // this means the password must be at least four characters long
+        len: [4]
+      }
     }
   },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate:{
-      len:[4]
-    }
-  }
-},
   {
-    // TABLE CONFIGURATION OPTION GO HERE
-
-    // PASS IN OUR IMPORT SEQUELIZE CONNECTION
     sequelize,
-    // DON'T AUTO CREATE TIMESTRAP FIELD
     timestamps: false,
-    // DON'T PLURALIZE NAME OF DATABASE TABLE
     freezeTableName: true,
-    // USE UNDERSCORE INTEAD OF CAMEL-CASING
     underscored: true,
-    // MAKE IT SO OUR MODEL NAME STAYS LOWERCASE IN THE DATABASE
     modelName: 'user'
-
   }
 );
 
