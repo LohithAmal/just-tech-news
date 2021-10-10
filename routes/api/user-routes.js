@@ -5,7 +5,7 @@ const {User} = require('../../models');
 // GET /API/USERS-READ
 router.get('/',(req,res)=>{
   User.findAll({
-    attributes: {exclude: ['password']}
+    // attributes: {exclude: ['password']}
   })
   .then(dbUserData => res.json(dbUserData))
   .catch(err =>{
@@ -49,10 +49,32 @@ router.post('/',(req,res)=>{
     res.status(500).json(err);
   });
 });
+// login user
 
+router.post('/login', (req,res)=>{
+  // query operation
+  User.findOne({
+    where: {
+      email: req.body.email
+    }
+  }).then(dbUserData =>{
+    if(!dbUserData){
+      res.status(400).json({message:'No user found with this email adress!'});
+      return;
+    }
+      const validPassword = dbUserData.checkPassword(req.body.password);
+      if(!validPassword){
+        res.status(400).json({message: 'Incorrect password!'});
+        return;
+      }
+    
+    res.json({user: dbUserData, message: 'You are now logged in!'});
+  });
+});
 // PUT/API/USERS/1-UPDATE
 router.put('/:id',(req,res)=>{
   User.update(req.body,{
+    individualHooks: true,
     where: {
       id: req.params.id
     }
